@@ -1,0 +1,11 @@
+FileVersion = 1
+Dependencies = {corlib = "*", SDL2 = "*"}
+
+[Project]
+Name = "BasicEngine"
+TargetType = "BeefLib"
+StartupObject = "BasicEngine.Program"
+
+[Configs.Debug.Win64]
+LibPaths = ["$(ProjectDir)/dist/libnoise.lib"]
+PostBuildCmds = ["CopyToDependents(\"$(ProjectDir)/dist/*.dll\")"]
