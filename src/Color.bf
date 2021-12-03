@@ -8,6 +8,9 @@ namespace BasicEngine
 		public uint8 G = (.)255;
 		public uint8 B = (.)255;
 
+		public bool IsWhite { get { return R == 0xFF && G == 0xFF && B == 0xFF; } };
+		public bool IsBlack { get { return R == 0x00 && G == 0x00 && B == 0x00; } };
+
 		///*
 		// this
 		//    the Constructor calls SetColor with the given Parameters
@@ -40,7 +43,11 @@ namespace BasicEngine
 
 		public void SetRandom()
 		{
-			SetColor((.)gRand.Next(0, 255), (.)gRand.Next(0, 255), (.)gRand.Next(0, 255));
+			SetColor((.)gRand.Next(0x00, 0xFF), (.)gRand.Next(0x00, 0xFF), (.)gRand.Next(0x00, 0xFF));
+		}
+		public void SetRandomNotPure()
+		{
+			SetColor((.)gRand.Next(0x01, 0xFE), (.)gRand.Next(0x01, 0xFE), (.)gRand.Next(0x01, 0xFE));
 		}
 		public void SetRandom(((int, int), (int, int), (int, int)) range)
 		{

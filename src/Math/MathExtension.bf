@@ -189,5 +189,51 @@ namespace System
 					System.Diagnostics.Debug.Write("_");
 			}
 		}
+
+		public static void SmoothGrid(ref uint8[,] points, int height, int width, float bias, int repeats = 1)
+		{
+			for (var i < repeats)
+			{
+				var overlayBuffer = scope uint8[height, width];
+				for (int32 y = 0; y < height; y++)
+				{
+					for (int32 x = 0; x < width; x++)
+					{
+						overlayBuffer[y, x] = points[y, x];
+						uint8 val = overlayBuffer[y, x];
+						float smoothBias = bias;
+						if (x > 0)
+						{
+							val = (uint8)Lerp(smoothBias, val, points[y, x - 1]);
+						}
+
+						if (x < width - 1)
+						{
+							val = (uint8)Lerp(smoothBias, val, points[y, x + 1]);
+						}
+
+						if (y > 0)
+						{
+							val = (uint8)Lerp(smoothBias, val, points[y - 1, x]);
+						}
+
+						if (y < height - 1)
+						{
+							val = (uint8)Lerp(smoothBias, val, points[y + 1, x]);
+						}
+					}
+				}
+
+				for (var index < overlayBuffer.Count)
+				{
+					points[index] = overlayBuffer[index];
+				}
+			}
+		}
+
+		private static int toFlatIndex(int x, int y, int width)
+		{
+			return x + width * (y);
+		}
 	}
 }

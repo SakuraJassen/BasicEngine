@@ -73,7 +73,7 @@ static
 	public static mixin Log(var obj1)
 	{
 #if DEBUG
-		BasicEngine.Logger.Log(System.Compiler.CallerFileName, System.Compiler.CallerLineNum, obj1);
+		BasicEngine.Debug.Logger.Log(System.Compiler.CallerFileName, System.Compiler.CallerLineNum, obj1);
 #endif
 	}
 
@@ -88,7 +88,7 @@ static
 	public static mixin Log(var obj1, var obj2)
 	{
 #if DEBUG
-		BasicEngine.Logger.Log(System.Compiler.CallerFileName, System.Compiler.CallerLineNum, obj1, obj2);
+		BasicEngine.Debug.Logger.Log(System.Compiler.CallerFileName, System.Compiler.CallerLineNum, obj1, obj2);
 #endif
 	}
 
@@ -105,7 +105,7 @@ static
 	public static mixin Log(var obj1, var obj2, var obj3)
 	{
 #if DEBUG
-		BasicEngine.Logger.Log(System.Compiler.CallerFileName, System.Compiler.CallerLineNum, obj1, obj2, obj3);
+		BasicEngine.Debug.Logger.Log(System.Compiler.CallerFileName, System.Compiler.CallerLineNum, obj1, obj2, obj3);
 #endif
 	}
 

@@ -13,7 +13,7 @@ namespace BasicEngine.Entity
 		//   mImage saves a pointer to the Sprite used by the Entity.
 		//   This is useful if the Object creates the Image dynamically.
 		///*
-		protected Image mImage = null;
+		protected Image mImage = null ~ mImage = null;
 
 		///*
 		// mPos

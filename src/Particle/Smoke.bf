@@ -21,15 +21,17 @@ namespace BasicEngine.Particle
 		public override void Update(int dt)
 		{
 			base.Update(dt);
+
 			if (mUpdateCnt % 20 == 0)
+			{
 				mSizeMod++;
+				FadeOut(45, 2, 255, 0);
+			}
 		}
 
 
 		public override void Draw(int dt)
 		{
-			FadeOut(45, 2, 255, 0);
-
 			SDL.Rect srcRect = .(0, 0, mImage.mSurface.w, mImage.mSurface.h);
 			SDL.Rect destRect = .((int32)mPos.mX, (int32)mPos.mY, mImage.mSurface.w + (.)mSizeMod, mImage.mSurface.h + (.)mSizeMod);
 			SDL.RenderCopyEx(gEngineApp.mRenderer, mImage.mTexture, &srcRect, &destRect, mDrawAngle, null, .None);

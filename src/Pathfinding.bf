@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using static System.Platform;
 
 namespace BasicEngine
 {
@@ -50,11 +49,11 @@ namespace BasicEngine
 		public this(Vector2D* posRef, List<Vector2D> pathList, int dur = 10)
 		{
 			mObjectPos = posRef;
-			
+
 			for (var item in pathList)
 				mPath.Add((item, new Vector2D(dur, dur)));
 
-			nextPathPos();
+			advancePathPos();
 			mStartPos = new Vector2D(*posRef);
 		}
 
@@ -66,17 +65,17 @@ namespace BasicEngine
 			DisposePath();
 			mPath = pathList;
 
-			nextPathPos();
+			advancePathPos();
 			mStartPos = new Vector2D(*posRef);
 		}
 
 		public ~this()
 		{
-			if(!Elapsed)
+			if (!Elapsed)
 			{
 				var lastPos = mTargetPos;
-				if(mPath.Count > 0)
-					lastPos = mPath[mPath.Count].0;
+				if (mPath.Count > 0)
+					lastPos = mPath[mPath.Count - 1].0;
 
 				(*mObjectPos).mX = lastPos.mX;
 				(*mObjectPos).mY = lastPos.mY;
@@ -85,7 +84,7 @@ namespace BasicEngine
 
 		private void DisposePath()
 		{
-			if(mPath == null)
+			if (mPath == null)
 				return;
 			for (var item in mPath)
 			{
@@ -103,7 +102,7 @@ namespace BasicEngine
 			if (Elapsed)
 			{
 				if (mPath.Count > 0)
-					nextPathPos();
+					advancePathPos();
 				else
 				{
 					if (mSetFinishPos)
@@ -137,12 +136,12 @@ namespace BasicEngine
 			mPath.Insert(0, (pos, new Vector2D(dur, dur)));
 		}
 
-		private void nextPathPos()
+		private void advancePathPos()
 		{
 			SafeDelete!(mStartPos);
 
 			mStartPos = mTargetPos;
-			if(mPath.Count > 0)
+			if (mPath.Count > 0)
 			{
 				var nextPos = mPath.PopFront();
 				mTargetPos = nextPos.0;

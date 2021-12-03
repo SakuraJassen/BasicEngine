@@ -139,9 +139,9 @@ namespace BasicEngine
 		{
 			base.Init();
 			//Images.Init();
-			if (mHasAudio)
+			//if (mHasAudio)
 				//Sounds.Init();
-				mFont = new Font();
+			mFont = new Font();
 			mFont.Load("zorque.ttf", 24);
 
 			mGameState = new GameState();
