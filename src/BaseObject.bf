@@ -1,5 +1,6 @@
 using BasicEngine.Interface;
 using BasicEngine.LayeredList;
+using System;
 
 namespace BasicEngine.Entity
 {
@@ -27,12 +28,32 @@ namespace BasicEngine.Entity
 
 		///*
 		// mMaxUpdates
-		//   If mUpdateCnt
+		//   If mUpdateCnt is greater then mMaxUpdates mIsDeleting gets set to true
 		///*
-		public int mMaxUpdates = 0; // 
-		public int32 mUpdateCnt; // How often the Update method has been called.
+		public int mMaxUpdates = 0;//
+		public int32 mUpdateCnt;// How often the Update method has been called.
 
 		public virtual void Update(int dt) { }
 		public virtual void Draw(int dt) { }
+
+		private String _name = null ~ SafeDelete!(_);
+		public String Name()
+		{
+			if (_name == null)
+			{
+				var name = ToStackString!(this).Split('@');
+				var ret = "";
+				for (var split in name)
+				{
+					ret = ToGlobalString!(split);
+					break;
+				}
+				SafeMemberSet!(_name, ret);
+				name.Dispose();
+				return ret;
+			}
+			else
+				return _name;
+		}
 	}
 }

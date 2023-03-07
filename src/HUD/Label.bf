@@ -1,16 +1,17 @@
 using System;
 using SDL2;
 using BasicEngine.Entity;
+using BasicEngine.Debug;
 
 namespace BasicEngine.HUD
 {
 	class Label : HUDComponent
 	{
-		String mStr ~ delete _;
+		String mStr ~ SafeDelete!(_);
 		bool mChangedString;
+		String mformatString = "{}";
 		public bool mCenterX = false;
 		public bool mOutline = true;
-
 
 		private Font mFont ~ delete _;
 		private Font mOutlineFont ~ delete _;
@@ -28,13 +29,13 @@ namespace BasicEngine.HUD
 				mFontSize = value;
 			}
 		}
-		private SDL.Surface* mTextSurface ~ SDL.FreeSurface(_);
-
+		//private SDL.Surface* mTextSurface ~ SDL.FreeSurface(_);
+		private Image mTextImage = new Image() ~ SafeDelete!(_);
 		public this(String str) : this(str, 0, 0)
 		{
 		}
 
-		public this(String str, float x, float y, int32 fontSize = 16)
+		public this(String str, float x, float y, int32 fontSize = 24)
 		{
 			if (str.IsEmpty || str == null)
 				SafeMemberSet!(mStr, new String(" "));
@@ -43,48 +44,96 @@ namespace BasicEngine.HUD
 
 			mVel = 1.5f;
 			mAngle = -90f;
-			mPos.mX = x;
-			mPos.mY = y;
+			mOffset.mX = x;
+			mOffset.mY = y;
 			mMaxUpdates = 90;
 			SetFont("zorque.ttf", fontSize);
 			SafeMemberSet!(mColor, new BasicEngine.Color((uint8)64, (uint8)255, (uint8)64));
 			CalculatePos();
+			//CalculateSize();
+			SafeMemberSet!(mSize, new Size2D(1, 1));
+
 			RenderImage();
+
+			base.Init();
+		}
+
+		public override void Init()
+		{
+			//base.Init();
 		}
 
 		public ~this()
 		{
-		   //if(mStr != null)
-			   //delete mStr;
+			if (mStr != null)
+				NOP!();
+				//delete mStr;
+		}
+
+		public void CalculateSize()
+		{
+			SDLTTF.SizeText(mFont.mFont, (char8*)mStr, var w, var h);
+			SafeMemberSet!(mSize, new Size2D(w, h));
 		}
 
 		public void RenderImage()
 		{
+			var formatedStr = StackStringFormat!(mformatString, mStr);
+			SDL.FreeSurface(mTextImage.mSurface);
+			mTextImage.mSurface = null;
 			if (mOutline)
 			{
-				mTextSurface = SDLTTF.RenderUTF8_Blended(mOutlineFont.mFont, mStr, SDL.Color(0, 0, 0, 255));
-				var fg_surface = SDLTTF.RenderUTF8_Blended(mFont.mFont, mStr, mColor.ToSDLColor());
-
-				SDL.SetSurfaceBlendMode(mTextSurface, .Blend);
-				SDL.Rect destRect = .(mOutlineSize, mOutlineSize, mTextSurface.w, mTextSurface.h);
-				SDL.SDL_BlitSurface(fg_surface, null, mTextSurface, &destRect);
+				mTextImage.mSurface = SDLTTF.RenderUTF8_Blended(mOutlineFont.mFont, formatedStr, SDL.Color(0, 0, 0, 255));
+				var fg_surface = SDLTTF.RenderUTF8_Blended(mFont.mFont, formatedStr, mColor.ToSDLColor());
+				if (fg_surface == null || mTextImage.mSurface == null)
+				{
+					SDLError!(1);
+				}
+				SDL.SetSurfaceBlendMode(mTextImage.mSurface, .Blend);
+				SDL.Rect destRect = .(mOutlineSize, mOutlineSize, mTextImage.mSurface.w, mTextImage.mSurface.h);
+				SDL.SDL_BlitSurface(fg_surface, null, mTextImage.mSurface, &destRect);
 
 				SDL.FreeSurface(fg_surface);
 			}
 			else
 			{
-				mTextSurface = SDLTTF.RenderUTF8_Blended(mFont.mFont, mStr, mColor.ToSDLColor());
+				mTextImage.mSurface = SDLTTF.RenderUTF8_Blended(mFont.mFont, formatedStr, mColor.ToSDLColor());
+				if (mTextImage.mSurface == null)
+				{
+					SDLError!(1);
+				}
 			}
-			SafeMemberSet!(mSize, new Size2D(mTextSurface.w, mTextSurface.h));
+			if (mTextImage.mTexture != null)
+			{
+				if (SDL.QueryTexture(mTextImage.mTexture, var f, var a, var w, var h) == 0)
+				{
+					SDL.DestroyTexture(mTextImage.mTexture);
+				}
+				else
+				{
+					SDLError!(1);
+				}
+			}
+			mTextImage.mTexture = SDL.CreateTextureFromSurface(gEngineApp.mRenderer, mTextImage.mSurface);
+			if (mTextImage.mTexture == null)
+			{
+				SDLError!(1);
+			}
+			SafeMemberSet!(mSize, new Size2D(mTextImage.mSurface.w, mTextImage.mSurface.h));
 			mChangedString = false;
+//			Logger.Debug("render Label");
 		}
 
 
-		public void SetString(String str)
+		public void SetString(String str, bool rerenderImage = true)
 		{
 			SafeMemberSet!(mStr, str);
+//			Logger.Debug(str);
 			mChangedString = true;
-			RenderImage();
+			if (rerenderImage)
+			{
+				RenderImage();
+			}
 		}
 
 		public void SetFont(String font, int32 fontSize, int32 outlineSize = 1)
@@ -108,18 +157,16 @@ namespace BasicEngine.HUD
 			if (!mVisiable)
 				return;
 
-			base.Draw(dt);
+			//base.Draw(dt);
 
 			let renderer = gEngineApp.mRenderer;
 
-			let texture = SDL.CreateTextureFromSurface(renderer, mTextSurface);
-			SDL.Rect srcRect = .(0, 0, mTextSurface.w, mTextSurface.h);
-			SDL.Rect destRect = .((int32)mPos.mX, (int32)mPos.mY, mTextSurface.w, mTextSurface.h);
+			SDL.Rect srcRect = .(0, 0, mTextImage.mSurface.w, mTextImage.mSurface.h);
+			SDL.Rect destRect = .((int32)mPos.mX, (int32)mPos.mY, mTextImage.mSurface.w, mTextImage.mSurface.h);
 			if (mCenterX)
-				destRect.x -= mTextSurface.w / 2;
+				destRect.x -= mTextImage.mSurface.w / 2;
 
-			SDL.RenderCopy(renderer, texture, &srcRect, &destRect);
-			SDL.DestroyTexture(texture);
+			SDL.RenderCopy(renderer, mTextImage.mTexture, &srcRect, &destRect);
 
 			SDL.SetRenderDrawColor(renderer, 255, 255, 255, 255);
 			/*gEngineApp.Draw(mImage, mPos.mX, mPos.mY);

@@ -1,3 +1,4 @@
+using System;
 namespace BasicEngine.Noise
 {
 	class BaseNoiseGen
@@ -9,6 +10,10 @@ namespace BasicEngine.Noise
 
 		public this(int seed)
 		{
+			/*
+						Deprecated use FastNoiseLite instead.
+						https://github.com/EinScott/FastNoise_Beef
+					*/
 			Reseed(seed);
 		}
 

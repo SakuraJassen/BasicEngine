@@ -197,7 +197,7 @@ namespace BasicEngine.Collections
 				(int, int) smallest = (-1, int.MaxValue);
 				for ((int, String) pair in localString)
 				{
-					if (smallest.1 > pair.1.Length)
+					if (smallest.1 > pair.1.Length && pair.1.Length >= name.Length)
 					{
 						smallest.1 = pair.1.Length;
 						smallest.0 = pair.0;
@@ -291,7 +291,7 @@ namespace BasicEngine.Collections
 
 		///*
 		// ToString
-		//    Formats the Members to be more readable. 
+		//    Formats the Members to be more readable.
 		///*
 		// Parameter:
 		//   strBuffer: the Buffer to which the Text should be append to.

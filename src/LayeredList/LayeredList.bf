@@ -5,7 +5,7 @@ using BasicEngine.Entity;
 
 namespace BasicEngine.LayeredList
 {
-	class LayeredItem
+	class LayeredEntry
 	{
 		public List<Entity> mEntities = new List<Entity>() ~ DeleteContainerAndItems!(_);
 		public List<Particle> mParticles = new List<Particle>() ~ DeleteContainerAndItems!(_);
@@ -13,9 +13,10 @@ namespace BasicEngine.LayeredList
 
 	class LayeredList
 	{
-		public List<LayeredItem> mLayers ~ DeleteContainerAndItems!(_);
+		public List<LayeredEntry> mLayers ~ DeleteContainerAndItems!(_);
 		private int maxLayer = 0;
-		public enum LayerNames : uint8 {
+		public enum LayerNames : uint8
+		{
 			BG1 = 0,
 			BG2 = 1,
 			BG3 = 2,
@@ -28,38 +29,46 @@ namespace BasicEngine.LayeredList
 			HUD = 9,
 		}
 
+		public this()
+		{
+			maxLayer = 10;
+			mLayers = new List<LayeredEntry>(maxLayer);
+			for (int i < maxLayer)
+				mLayers.Add(new LayeredEntry());
+		}
+
 		public this(int layers)
 		{
 			maxLayer = layers;
-			mLayers = new List<LayeredItem>(maxLayer);
-			for(int i < maxLayer)
-				mLayers.Add(new LayeredItem());
+			mLayers = new List<LayeredEntry>(maxLayer);
+			for (int i < maxLayer)
+				mLayers.Add(new LayeredEntry());
 		}
 
 		public void AddEntity(Entity entity, LayerNames layer = 0)
 		{
-			if((uint8)layer > maxLayer)
+			if ((uint8)layer > maxLayer)
 				return;
 			mLayers[(uint8)layer].mEntities.Add(entity);
 		}
 
 		public void AddEntityFront(Entity entity, LayerNames layer = 0)
 		{
-			if((uint8)layer > maxLayer)
+			if ((uint8)layer > maxLayer)
 				return;
 			mLayers[(uint8)layer].mEntities.Insert(0, entity);
 		}
 
 		public void AddParticle(Particle particle, LayerNames layer = 0)
 		{
-			if((uint8)layer > maxLayer)
+			if ((uint8)layer > maxLayer)
 				return;
 			mLayers[(uint8)layer].mParticles.Add(particle);
 		}
 
 		public void AddParticleFront(Particle particle, LayerNames layer = 0)
 		{
-			if((uint8)layer > maxLayer)
+			if ((uint8)layer > maxLayer)
 				return;
 			mLayers[(uint8)layer].mParticles.Insert(0, particle);
 		}
@@ -67,7 +76,7 @@ namespace BasicEngine.LayeredList
 		public List<Entity> GetAllEntities()
 		{
 			List<Entity> ret = new List<Entity>();
-			for(let e in mLayers)
+			for (let e in mLayers)
 				ret.AddRange(e.mEntities);
 			return ret;
 		}
@@ -75,7 +84,7 @@ namespace BasicEngine.LayeredList
 		public List<Particle> GetAllParticles()
 		{
 			List<Particle> ret = new List<Particle>();
-			for(let p in mLayers)
+			for (let p in mLayers)
 				ret.AddRange(p.mParticles);
 			return ret;
 		}

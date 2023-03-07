@@ -206,23 +206,23 @@ namespace BasicEngine
 		}
 	}
 
-	struct v2d : IHashable
+	struct v2d<T> : IHashable where T : var
 	{
-		public float x;
-		public float y;
+		public T x;
+		public T y;
 
 		public this()
 		{
 			this = default;
 		}
 
-		public this(float x, float y)
+		public this(T x, T y)
 		{
 			this.x = x;
 			this.y = y;
 		}
 
-		public this(float v)
+		public this(T v)
 		{
 			this.x = v;
 			this.y = v;
@@ -230,115 +230,115 @@ namespace BasicEngine
 
 		public this(Vector2D pos)
 		{
-			this.x = pos.mX;
-			this.y = pos.mY;
+			this.x = (T)pos.mX;
+			this.y = (T)pos.mY;
 		}
 
-		public static bool operator==(v2d lhs, v2d rhs)
+		public static bool operator==(v2d<T> lhs, v2d<T> rhs)
 		{
 			return (lhs.x == rhs.x && lhs.y == rhs.y);
 		}
 
-		public static bool operator!=(v2d lhs, v2d rhs)
+		public static bool operator!=(v2d<T> lhs, v2d<T> rhs)
 		{
 			return lhs.x != rhs.x || lhs.y != rhs.y;
 		}
 
-		public static v2d operator+(v2d lhs, v2d rhs)
+		public static v2d<T> operator+(v2d<T> lhs, v2d<T> rhs)
 		{
-			return v2d(rhs.x + lhs.x, rhs.y + lhs.y);
+			return v2d<T>(rhs.x + lhs.x, rhs.y + lhs.y);
 		}
 
-		public void operator+=(v2d rhs) mut
+		public void operator+=(v2d<T> rhs) mut
 		{
 			x += rhs.x;
 			y += rhs.y;
 		}
 
-		public static v2d operator-(v2d lhs, v2d rhs)
+		public static v2d<T> operator-(v2d<T> lhs, v2d<T> rhs)
 		{
-			return v2d(lhs.x - rhs.x, lhs.y - rhs.y);
+			return v2d<T>(lhs.x - rhs.x, lhs.y - rhs.y);
 		}
 
-		public void operator-=(v2d rhs) mut
+		public void operator-=(v2d<T> rhs) mut
 		{
 			x -= rhs.x;
 			y -= rhs.y;
 		}
 
-		public static v2d operator/(v2d lhs, v2d rhs)
+		public static v2d<T> operator/(v2d<T> lhs, v2d<T> rhs)
 		{
-			return v2d(lhs.x / rhs.x, lhs.y / rhs.y);
+			return v2d<T>(lhs.x / rhs.x, lhs.y / rhs.y);
 		}
 
-		public void operator/=(v2d rhs) mut
+		public void operator/=(v2d<T> rhs) mut
 		{
 			x /= rhs.x;
 			y /= rhs.y;
 		}
 
-		public static v2d operator*(v2d lhs, v2d rhs)
+		public static v2d<T> operator*(v2d<T> lhs, v2d<T> rhs)
 		{
-			return v2d(lhs.x * rhs.x, lhs.y * rhs.y);
+			return v2d<T>(lhs.x * rhs.x, lhs.y * rhs.y);
 		}
 
-		public void operator*=(v2d rhs) mut
+		public void operator*=(v2d<T> rhs) mut
 		{
 			x *= rhs.x;
 			y *= rhs.y;
 		}
 
-		public static v2d operator+(v2d lhs, float rhs)
+		public static v2d<T> operator+(v2d<T> lhs, T rhs)
 		{
-			return v2d(lhs.x + rhs, lhs.y + rhs);
+			return v2d<T>(lhs.x + rhs, lhs.y + rhs);
 		}
 
-		public void operator+=(float rhs) mut
+		public void operator+=(T rhs) mut
 		{
 			x += rhs;
 			y += rhs;
 		}
 
-		public static v2d operator-(v2d lhs, float rhs)
+		public static v2d<T> operator-(v2d<T> lhs, T rhs)
 		{
-			return v2d(lhs.x - rhs, lhs.y - rhs);
+			return v2d<T>(lhs.x - rhs, lhs.y - rhs);
 		}
 
-		public void operator-=(float rhs) mut
+		public void operator-=(T rhs) mut
 		{
 			x -= rhs;
 			y -= rhs;
 		}
 
-		public static v2d operator*(v2d lhs, float rhs)
+		public static v2d<T> operator*(v2d<T> lhs, T rhs)
 		{
-			return v2d(lhs.x * rhs, lhs.y * rhs);
+			return v2d<T>(lhs.x * rhs, lhs.y * rhs);
 		}
 
-		public void operator*=(float rhs) mut
+		public void operator*=(T rhs) mut
 		{
 			x *= rhs;
 			y *= rhs;
 		}
 
-		public static v2d operator/(v2d lhs, float rhs)
+		public static v2d<T> operator/(v2d<T> lhs, T rhs)
 		{
-			return v2d(lhs.x / rhs, lhs.y / rhs);
+			return v2d<T>(lhs.x / rhs, lhs.y / rhs);
 		}
 
-		public void operator/=(float rhs) mut
+		public void operator/=(T rhs) mut
 		{
 			x /= rhs;
 			y /= rhs;
 		}
 
-		public void Set(float x, float y) mut
+		public void Set(T x, T y) mut
 		{
 			this.x = x;
 			this.y = y;
 		}
 
-		public void Set(v2d val) mut
+		public void Set(v2d<T> val) mut
 		{
 			this.x = val.x;
 			this.y = val.y;
@@ -346,8 +346,8 @@ namespace BasicEngine
 
 		public void Set(Vector2D val) mut
 		{
-			this.x = val.mX;
-			this.y = val.mY;
+			this.x = (.)val.mX;
+			this.y = (.)val.mY;
 		}
 
 		public void Rotate(double deg) mut
@@ -365,51 +365,51 @@ namespace BasicEngine
 		{
 			float length = Length();
 			if (length == 0) return;
-			let result = this * (float)(1.0 / length);
+			v2d<T> result = this * (float)(1.0 / length);
 			this.x = result.x;
 			this.y = result.y;
 			return;
 		}
 
-		public void Lerp(v2d val2, float pct) mut
+		public void Lerp(v2d<T> val2, float pct) mut
 		{
 			x = Math.Lerp(x, val2.x, pct);
 			y = Math.Lerp(y, val2.y, pct);
 		}
 
-		public float Distance(v2d v)
+		public float Distance(v2d<T> v)
 		{
-			v2d d = .(v.x - x, v.y - y);
+			v2d<T> d = .(v.x - x, v.y - y);
 			return d.Length();
 		}
 
-		public float AngleTo(v2d other)
+		public float AngleTo(v2d<T> other)
 		{
 			return Math.Acos(dot(this, other) / (this.Length() * other.Length()));
 		}
 
-		public float Length()
+		public T Length()
 		{
 			return Math.Sqrt(x * x + y * y);
 		}
 
-		void truncate(float length) mut
+		void truncate(T length) mut
 		{
 			double angle = Math.Atan2(y, x);
 			x = length * (.)Math.Cos(angle);
 			y = length * (.)Math.Sin(angle);
 		}
 
-		v2d ortho()
+		v2d<T> ortho()
 		{
-			return v2d(y, -x);
+			return v2d<T>(y, x * -1);
 		}
 
-		static float dot(v2d v1, v2d v2)
+		static float dot(v2d<T> v1, v2d<T> v2)
 		{
 			return v1.x * v2.x + v1.y * v2.y;
 		}
-		static float cross(v2d v1, v2d v2)
+		static float cross(v2d<T> v1, v2d<T> v2)
 		{
 			return (v1.x * v2.y) - (v1.y * v2.x);
 		}

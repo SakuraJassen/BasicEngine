@@ -15,7 +15,6 @@ namespace BasicEngine.Particle
 			mAngle = 270;
 			mVel = 0.5f;
 			mMaxUpdates = 60;
-			RenderImage();
 		}
 
 		public override void Update(int dt)
@@ -35,7 +34,6 @@ namespace BasicEngine.Particle
 			SDL.Rect srcRect = .(0, 0, mImage.mSurface.w, mImage.mSurface.h);
 			SDL.Rect destRect = .((int32)mPos.mX, (int32)mPos.mY, mImage.mSurface.w + (.)mSizeMod, mImage.mSurface.h + (.)mSizeMod);
 			SDL.RenderCopyEx(gEngineApp.mRenderer, mImage.mTexture, &srcRect, &destRect, mDrawAngle, null, .None);
-			//gEngineApp.Draw(mImage, mPos.mX, mPos.mY, mAngle+mDrawAngleOffset);
 		}
 	}
 }

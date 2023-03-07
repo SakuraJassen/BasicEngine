@@ -79,8 +79,8 @@ namespace BasicEngine.Collections
 		///*
 		private void init(int count)
 		{
-			int d = (int)System.Math.Round((float)count / 8);// A byte has 8 bits, so we only need N/8 bytes
-			mMap = new uint8[d]*;
+			int byteCount = (int)System.Math.Round((float)count / 8);// A byte has 8 bits, so we only need N/8 bytes
+			mMap = new uint8[byteCount]*;
 
 			mNamedIndices = new NamedIndices(count);
 		}

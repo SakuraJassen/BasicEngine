@@ -9,3 +9,32 @@ StartupObject = "BasicEngine.Program"
 [Configs.Debug.Win64]
 LibPaths = ["$(ProjectDir)/dist/libnoise.lib"]
 PostBuildCmds = ["CopyToDependents(\"$(ProjectDir)/dist/*.dll\")"]
+
+[[ProjectFolder.Items]]
+Type = "IgnoreFolder"
+Name = "ANN"
+AutoInclude = true
+
+[[ProjectFolder.Items]]
+Type = "AutoFolder"
+Name = "Entity"
+
+[[ProjectFolder.Items.Items]]
+Type = "IgnoreSource"
+Name = "NeuroEntity.bf"
+
+[[ProjectFolder.Items]]
+Type = "AutoFolder"
+Name = "Collections"
+
+[[ProjectFolder.Items.Items]]
+Type = "IgnoreSource"
+Name = "BinarySearchTree - Kopie.bf"
+
+[[ProjectFolder.Items]]
+Type = "AutoFolder"
+Name = "HUD"
+
+[[ProjectFolder.Items.Items]]
+Type = "IgnoreSource"
+Name = "BuggedDataLabel.bf"

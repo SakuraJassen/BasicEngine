@@ -10,35 +10,62 @@ namespace BasicEngine.Debug
 
 		static public Stopwatch this[String name] { get { return mStopwatches[name]; } }
 
-		static public Stopwatch AddTimer(String name)
+		static public Stopwatch Add(String name, bool startTimerImmediately = false, bool takeOwnership = false)
 		{
-			var sw = new Stopwatch();
-			mStopwatches.Add(name, sw);
+			Stopwatch sw = null;
+
+			switch (takeOwnership)
+			{
+			case true:
+				sw = new Stopwatch(startTimerImmediately);
+				mStopwatches.Add(name, sw);
+			case false:
+				sw = new Stopwatch(startTimerImmediately);
+				mStopwatches.Add(ToGlobalString!(name), sw);
+			}
+
 			return sw;
 		}
 
-		static public Stopwatch AddTimer()
+		static public Stopwatch AddAndStart(String name, bool takeOwnership = false)
+		{
+			Stopwatch sw = null;
+			if (mStopwatches.ContainsKey(name))
+			{
+				sw = mStopwatches[name];
+				sw.Start();
+				if (takeOwnership)
+					SafeDelete!(name);
+			}
+			else
+			{
+				sw = Add(name, true, takeOwnership);
+			}
+			return sw;
+		}
+
+		static public Stopwatch Add()
 		{
 			var sw = new Stopwatch();
 			mStopwatches.Add(ToGlobalString!(mStopwatches.Count + 1), sw);
 			return sw;
 		}
 
-		static public Stopwatch StartTimer(String name)
+		static public Stopwatch Start(String name)
 		{
 			var sw = mStopwatches[name];
 			sw.Start();
 			return sw;
 		}
 
-		static public Stopwatch StopTimer(String name)
+		static public Stopwatch Stop(String name)
 		{
 			var sw = mStopwatches[name];
 			sw.Stop();
 			return sw;
 		}
 
-		static public Result<void> RemoveTimer(String name)
+		static public Result<void> Remove(String name)
 		{
 			var res = mStopwatches.GetAndRemove(name);
 			switch (res)
@@ -47,7 +74,24 @@ namespace BasicEngine.Debug
 				return .Err((.)"Couldn't find Timer.");
 			case .Ok(let sw):
 				SafeDelete!(sw.value);
+				SafeDelete!(sw.key);
 				return .Ok((void)0);
+			}
+		}
+
+		static public void Clear()
+		{
+			DeleteDictionaryAndKeysAndValues!(mStopwatches);
+			mStopwatches = new Dictionary<String, Stopwatch>();
+		}
+
+		public static void PrintAllTimer()
+		{
+			for (var valuePairs in mStopwatches)
+			{
+				if (valuePairs.value.ElapsedMicroseconds == 0)
+					continue;
+				Logger.Log(StackStringFormat!("{} - {}", valuePairs.key, TimeSpan(valuePairs.value.ElapsedMicroseconds)));
 			}
 		}
 	}
@@ -71,17 +115,17 @@ namespace BasicEngine.Debug
 			}
 			float avrg = totalTime;
 			avrg /= repeats;
-			Log!(StackStringFormat!("Timed the function {} times ", funcRepeats * repeats));
-			Log!(StackStringFormat!("elapsed time: {}", TimeSpan(totalTime)));
-			Log!(StackStringFormat!("average ms:   {}", TimeSpan((int64)avrg)));
-			Log!(StackStringFormat!("highest time: {}", TimeSpan((int64)highest)));
-			Log!(StackStringFormat!("lowest  time: {}", TimeSpan((int64)lowest)));
+			Logger.Log(StackStringFormat!("Timed the function {} times ", funcRepeats * repeats));
+			Logger.Log(StackStringFormat!("elapsed time: {}", TimeSpan(totalTime)));
+			Logger.Log(StackStringFormat!("average ms:   {}", TimeSpan((int64)avrg)));
+			Logger.Log(StackStringFormat!("highest time: {}", TimeSpan((int64)highest)));
+			Logger.Log(StackStringFormat!("lowest  time: {}", TimeSpan((int64)lowest)));
 		}
 
 		static public void LogTime<TFunc>(delegate TFunc() funcPtr, int repeats = 1)
 		{
 			float ret = (float)TimeFunc<TFunc>(funcPtr, repeats).1 / 1000;
-			Log!(StackStringFormat!("{} ms (times {} repeated)", ret, repeats));
+			Logger.Log(StackStringFormat!("{} ms (times {} repeated)", ret, repeats));
 		}
 
 		static public (TFunc, int64) TimeFunc<TFunc>(delegate TFunc() funcPtr, int repeats = 1)
@@ -114,17 +158,17 @@ namespace BasicEngine.Debug
 			}
 			float avrg = totalTime;
 			avrg /= repeats;
-			Log!(StackStringFormat!("Timed the function {} times ", funcRepeats * repeats));
-			Log!(StackStringFormat!("elapsed time: {}", TimeSpan(totalTime)));
-			Log!(StackStringFormat!("average ms:   {}", TimeSpan((int64)avrg)));
-			Log!(StackStringFormat!("highest time: {}", TimeSpan((int64)highest)));
-			Log!(StackStringFormat!("lowest  time: {}", TimeSpan((int64)lowest)));
+			Logger.Log(StackStringFormat!("Timed the function {} times ", funcRepeats * repeats));
+			Logger.Log(StackStringFormat!("elapsed time: {}", TimeSpan(totalTime)));
+			Logger.Log(StackStringFormat!("average ms:   {}", TimeSpan((int64)avrg)));
+			Logger.Log(StackStringFormat!("highest time: {}", TimeSpan((int64)highest)));
+			Logger.Log(StackStringFormat!("lowest  time: {}", TimeSpan((int64)lowest)));
 		}
 
 		static public void LogTime<TFunc, T>(delegate TFunc(T) funcPtr, T arg, int repeats = 1)
 		{
 			float ret = (float)TimeFunc<TFunc, T>(funcPtr, arg, repeats).1 / 1000;
-			Log!(StackStringFormat!("{} ms (times {} repeated)", ret, repeats));
+			Logger.Log(StackStringFormat!("{} ms (times {} repeated)", ret, repeats));
 		}
 
 		static public (TFunc, int64) TimeFunc<TFunc, T>(delegate TFunc(T) funcPtr, T arg, int repeats = 1)

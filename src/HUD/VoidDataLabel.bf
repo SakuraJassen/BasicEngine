@@ -6,14 +6,12 @@ using System.Threading;
 
 namespace BasicEngine.HUD
 {
-	class DataLabel<T> : Label
+	class VoidDataLabel<T> : Label where T : operator explicit void
 	{
-		T* mPointer ~ _ = null;
+		void* mPointer ~ _ = null;
 		T mLastValue ~ _ = default;
 
 		public bool AutoUpdate = true;
-
-		public int GroupId = 0;
 
 		public this(T* ptr, float x, float y, int32 fontSize = 24) : base("", x, y, fontSize)
 		{
@@ -29,7 +27,7 @@ namespace BasicEngine.HUD
 
 		public bool ForceUpdateString(bool rerenderImage = true)
 		{
-			T str = Volatile.Read<T>(ref *mPointer);
+			T str = (T)Volatile.Read<void>(ref *mPointer);
 			mLastValue = str;
 			SetString(ToGlobalString!(str), rerenderImage);
 			return true;
@@ -56,7 +54,7 @@ namespace BasicEngine.HUD
 		{
 			if (mPointer != null)
 			{
-				T str = Volatile.Read<T>(ref *mPointer);
+				T str = (T)Volatile.Read<void>(ref *mPointer);
 				if (str != mLastValue)
 				{
 					ForceUpdateString(str, rerenderImage);

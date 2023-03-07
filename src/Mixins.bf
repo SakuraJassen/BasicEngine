@@ -3,12 +3,21 @@ namespace BasicEngine
 {
 }
 
-
 static
 {
 	/*public static mixin NOP()
 	{
 	}*/
+
+	public static mixin SDLError(int err)
+	{
+		if (err != 0)
+		{
+			BasicEngine.Debug.Logger.Debug("SDLERR");
+			BasicEngine.Debug.Logger.LogMeta(System.Compiler.CallerFileName, System.Compiler.CallerLineNum);
+			BasicEngine.Debug.Logger.Error(scope System.String(SDL2.SDL.GetError()));
+		}
+	}
 
 	public static mixin SafeDelete(var obj)
 	{
@@ -67,13 +76,14 @@ static
 	// System.Compiler.CallerLineNum)
 	public static mixin LogMeta()
 	{
-		System.Diagnostics.Debug.Write("[{:00}:{:00}:{:00}] [{:000}:{}] ", System.DateTime.Now.Hour, System.DateTime.Now.Minute, System.DateTime.Now.Second, System.Compiler.CallerFileName, System.Compiler.CallerLineNum);
+		//System.Diagnostics.Debug.Write("[{:00}:{:00}:{:00}] [{:000}:{}] ", System.DateTime.Now.Hour, System.DateTime.Now.Minute, System.DateTime.Now.Second, System.Compiler.CallerFileName, System.Compiler.CallerLineNum);
+		BasicEngine.Debug.Logger.LogMeta();
 	}
 
 	public static mixin Log(var obj1)
 	{
 #if DEBUG
-		BasicEngine.Debug.Logger.Log(System.Compiler.CallerFileName, System.Compiler.CallerLineNum, obj1);
+		BasicEngine.Debug.Logger.Debug(System.Compiler.CallerFileName, System.Compiler.CallerLineNum, obj1);
 #endif
 	}
 
@@ -88,7 +98,7 @@ static
 	public static mixin Log(var obj1, var obj2)
 	{
 #if DEBUG
-		BasicEngine.Debug.Logger.Log(System.Compiler.CallerFileName, System.Compiler.CallerLineNum, obj1, obj2);
+		BasicEngine.Debug.Logger.Debug(System.Compiler.CallerFileName, System.Compiler.CallerLineNum, obj1, obj2);
 #endif
 	}
 
@@ -105,7 +115,7 @@ static
 	public static mixin Log(var obj1, var obj2, var obj3)
 	{
 #if DEBUG
-		BasicEngine.Debug.Logger.Log(System.Compiler.CallerFileName, System.Compiler.CallerLineNum, obj1, obj2, obj3);
+		BasicEngine.Debug.Logger.Debug(System.Compiler.CallerFileName, System.Compiler.CallerLineNum, obj1, obj2, obj3);
 #endif
 	}
 

@@ -4,6 +4,26 @@ namespace System
 {
 	extension Math
 	{
+		[CLink]
+		private static extern double frexp(double x, out int exp);
+
+		[CLink]
+		private static extern double ldexp(double x, int exp);
+		/*[CLink]
+		private static extern float frexp(float x, out float exp);*/
+
+		public static double Frexp(double x, out int exp)
+		{
+			var val = frexp(x, var exponent);
+			exp = exponent;
+			return val;
+		}
+
+		public static double Ldexp(double x, int exp)
+		{
+			return ldexp(x, exp);
+		}
+
 		public static float DegToRad(float angle)
 		{
 			return angle * PI_f / 180;
@@ -26,8 +46,8 @@ namespace System
 			Right = 0b0100,
 			Top = 0b0010,
 			Bottom = 0b0001,
-			Horizontal = 0b1100,
-			Vertical = 0b0011,
+			Horizontal = 0b0011,
+			Vertical = 0b1100,
 			Both = 0b1111
 		}
 

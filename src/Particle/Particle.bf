@@ -18,7 +18,12 @@ namespace BasicEngine.Particle
 
 		public Color mColor = null ~ SafeDeleteNullify!(_);
 
-		public float mAlpha = 1.0f;
+		public uint8 mAlpha = 0xFF;
+		public float NormalAlpha
+		{
+			set { mAlpha = ((uint8)(value * 0xFF) & 0xFF); }
+			get { return mAlpha / 0xFF; }
+		}
 
 		public Image mImage ~ DeleteAndNullify!(_);
 
@@ -36,8 +41,6 @@ namespace BasicEngine.Particle
 			this.mPos = pos;
 			this.mSize = size;
 			this.mLayer = layer;
-			DrawUtils.CreateTexture(mImage, mSize, gEngineApp.mRenderer);
-			RenderImage();
 		}
 
 		public virtual void RenderImage(bool border = false)
@@ -45,7 +48,7 @@ namespace BasicEngine.Particle
 			DrawUtils.CreateTexture(mImage, mSize, gEngineApp.mRenderer);
 
 			SDL.SetRenderTarget(gEngineApp.mRenderer, mImage.mTexture);
-			SDL.SetRenderDrawColor(gEngineApp.mRenderer, mColor.R, mColor.G, mColor.B, (.)(mAlpha * 254) & 0xFF);
+			SDL.SetRenderDrawColor(gEngineApp.mRenderer, mColor.R, mColor.G, mColor.B, mAlpha);
 			SDL.RenderClear(gEngineApp.mRenderer);
 
 			SDL.SetRenderDrawColor(gEngineApp.mRenderer, 0, 0, 0, 255);
@@ -65,12 +68,14 @@ namespace BasicEngine.Particle
 			mPos.mX += Math.Cos(RadAngle) * mVel;
 			mPos.mY += Math.Sin(RadAngle) * mVel;
 
-			if(mFadeOut)
+			if (mFadeOut)
 				FadeOut(mThreshold, mLowerThreshold, mMaxAlpha, mMinAlpha);
 		}
 
 		public override void Draw(int dt)
 		{
+			if (mImage == null)
+				RenderImage();
 			gEngineApp.Draw(mImage, mPos.mX, mPos.mY, mDrawAngle);
 		}
 

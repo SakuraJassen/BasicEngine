@@ -3,16 +3,16 @@ namespace BasicEngine.Math.Raycast
 {
 	class Ray
 	{
-		public v2d mPos;
-		public v2d mDir;
+		public v2d<float> mPos;
+		public v2d<float> mDir;
 
-		public this(v2d pos, float angle)
+		public this(v2d<float> pos, float angle)
 		{
 			mPos = pos;
 			mDir = .(Math.Cos(angle), Math.Sin(angle));
 		}
 
-		public Result<v2d> GetIntersection(v2d pos1, v2d pos2)
+		public Result<v2d<float>> GetIntersection(v2d<float> pos1, v2d<float> pos2)
 		{
 			var x1 = pos1.x;
 			var y1 = pos1.y;

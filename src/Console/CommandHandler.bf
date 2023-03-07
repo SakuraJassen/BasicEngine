@@ -71,7 +71,7 @@ namespace BasicEngine.Console
 		public void RunCommand(String command)
 		{
 			const var TIMER_NAME = "cmdTimer";
-			Timer.AddTimer(TIMER_NAME);
+			Timer.Add(TIMER_NAME);
 
 			var cmdText = ToStackString!(command);
 			cmdText.RemoveFromEnd(2);// Remove newline and return characters
@@ -150,7 +150,7 @@ namespace BasicEngine.Console
 
 				DeleteContainerAndItems!(lArgs);
 			}
-			Timer.RemoveTimer(TIMER_NAME);
+			Timer.Remove(TIMER_NAME);
 		}
 
 		public bool ExecuteCommand(params Object[] args)
@@ -384,7 +384,7 @@ namespace BasicEngine.Console
 			if (!hasCR)
 				SendChar('\r');
 
-			Log!(StackStringFormat!("Send massage '{}'", msg));
+			Logger.Info(StackStringFormat!("Send massage '{}'", msg));
 		}
 
 		public void SendChar(char32 ch)
@@ -397,7 +397,7 @@ namespace BasicEngine.Console
 		{
 			if (mClient.Send(&ch, sizeof(char32)) case .Ok)
 			{
-				System.Diagnostics.Debug.WriteLine("Send char '{}'!", ch);
+				//System.Diagnostics.Debug.WriteLine("Send char '{}'!", ch);
 			}
 		}
 	}

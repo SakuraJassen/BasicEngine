@@ -32,6 +32,24 @@ namespace BasicEngine
 		}
 
 		///*
+		// DrawString
+		//   Draws a String to the provided SDL.Renderer.
+		///*
+		public static Image GetStringImage(SDL.Renderer* r, Font font, float x, float y, String str, SDL.Color color, bool centerX = false)
+		{
+			var x;
+			Image retImage = new Image();
+
+			retImage.mSurface = SDLTTF.RenderUTF8_Blended(font.mFont, str, color);
+			retImage.mTexture = SDL.CreateTextureFromSurface(r, retImage.mSurface);
+
+			if (centerX)
+				x -= retImage.mSurface.w / 2;
+
+			return retImage;
+		}
+
+		///*
 		// DrawStringOutline
 		//   Draws a String with a given Outline thickness to the provided SDL.Renderer. (Quite Slow)
 		///*
@@ -64,6 +82,32 @@ namespace BasicEngine
 			SDL.DestroyTexture(texture);
 		}
 
+		public static Image GetStringOutlineImage(SDL.Renderer* r, Font font, float x, float y, String str, SDL.Color color, int32 outlineSize = 1, bool centerX = false)
+		{
+			var x;
+			Image retImage = new Image();
+
+			retImage.mSurface = SDLTTF.RenderUTF8_Blended(font.mFont, str, SDL.Color(0, 0, 0, 255));
+			var fg_surface = SDLTTF.RenderUTF8_Blended(font.mFont, str, color);
+			let bg_surface = retImage.mSurface;
+
+			SDLTTF.SetFontOutline(font.mFont, outlineSize);
+			SDLTTF.SetFontOutline(font.mFont, 0);
+
+			SDL.SetSurfaceBlendMode(bg_surface, .Blend);
+			SDL.Rect blitRect = .(outlineSize, outlineSize, bg_surface.w, bg_surface.h);
+			SDL.SDL_BlitSurface(fg_surface, null, bg_surface, &blitRect);
+
+			retImage.mTexture = SDL.CreateTextureFromSurface(r, retImage.mSurface);
+
+			if (centerX)
+				x -= bg_surface.w / 2;
+
+			SDL.FreeSurface(bg_surface);
+
+			return retImage;
+		}
+
 		///*
 		// CreateTexture
 		//    Creates a texture in the given Image Object
@@ -76,7 +120,8 @@ namespace BasicEngine
 		// Return:
 		//   Results in Result.Err if the parameters are faulty.
 		///*
-		public static Result<void> CreateTexture(Image image, Size2D size, SDL.Renderer* renderer)
+
+		public static Result<void> CreateTexture(Image image, Size2D size, SDL.Renderer* renderer, SDL.TextureAccess textureAccess = .Target)
 		{
 			if (image == null)
 				return .Err((.)"Image is null");
@@ -87,15 +132,35 @@ namespace BasicEngine
 			if (renderer == null)
 				return .Err((.)"Renderer is null");
 
+			if (size.Width <= 0 || size.Height <= 0)
+				return .Err((.)"Size can't be 0 ");
+
 			if (image.mTexture != null)
+			{
 				SDL.DestroyTexture(image.mTexture);
+				image.mTexture = null;
+			}
 			if (image.mSurface != null)
+			{
 				SDL.FreeSurface(image.mSurface);
+				image.mSurface = null;
+			}
 
-			image.mSurface = SDL.CreateRGBSurface(0, (.)size.Width, (.)size.Height, 32, 0, 0, 0, 0);
-			image.mTexture = SDL.CreateTexture(renderer, (.)SDL.PIXELFORMAT_RGBA8888, (.)SDL.TextureAccess.Target, (.)size.Width, (.)size.Height);
-			SDL.SetTextureBlendMode(image.mTexture, SDL.BlendMode.Blend);
-
+			image.mSurface = SDL.CreateRGBSurfaceWithFormat(0, (.)size.Width, (.)size.Height, 32, (.)SDL.PIXELFORMAT_RGBA8888);
+			if (image.mSurface == null)
+			{
+				SDLError!(1);
+				return .Err((void)"Couldn't create Surface");
+			}
+			image.mTexture = SDL.CreateTexture(renderer, (.)SDL.PIXELFORMAT_RGBA8888, (.)textureAccess, (.)size.Width, (.)size.Height);
+			if (image.mTexture == null)
+			{
+				SDLError!(1);
+				return .Err((void)"Couldn't create Texture");
+			}
+			//SDL.SetTextureBlendMode(image.mTexture, SDL.BlendMode.Blend);
+			image.mHeight = (int32)size.Height;
+			image.mWidth = (int32)size.Width;
 			return .Ok;
 		}
 
@@ -163,6 +228,26 @@ namespace BasicEngine
 				SDL.RenderDrawLine(r, x0 - x, y0 + y, x0 - x, y0 + y);//quadrant BL
 				SDL.RenderDrawLine(r, x0 + x, y0 + y, x0 + x, y0 + y);//quadrant BR
 			}
+		}
+
+		[Inline]
+		public static void SetPixel(uint32* data, Image image, int x, int y, SDL.Color color)
+		{
+			SDL.PixelFormat* fmt = image.mSurface.format;
+			(data)[(image.mSurface.w) * y + x] = ((uint32)color.r << fmt.rshift | (uint32)color.g << fmt.gshift | (uint32)color.b << fmt.bshift) | (uint32)color.a;
+		}
+
+		[Inline]
+		public static SDL.Color GetPixel(uint32* data, Image image, int x, int y)
+		{
+			SDL.Color color = .();
+			SDL.PixelFormat* fmt = image.mSurface.format;
+			var pixelVal = (data)[(image.mSurface.w) * y + x];
+			color.a = (uint8)(pixelVal & fmt.Amask);
+			color.r = (uint8)(pixelVal & fmt.Rmask);
+			color.g = (uint8)(pixelVal & fmt.Gmask);
+			color.b = (uint8)(pixelVal & fmt.Bmask);
+			return color;
 		}
 	}
 }

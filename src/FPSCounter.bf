@@ -4,6 +4,8 @@ namespace BasicEngine
 	class FPSCounter
 	{
 		int64 _frames = 0;
+		uint64 _totalFrames = 0;
+		public uint64 FrameCount { get { return _totalFrames; } }
 		float _dt = 0.0f;
 		float _fps = 0.0f;
 
@@ -25,6 +27,7 @@ namespace BasicEngine
 		public void Update(double dt, float rate = 5.0f)
 		{
 			++_frames;
+			++_totalFrames;
 
 			_dt += (float)dt * 0.001f;
 			_lastDeltaTimes[_lastIndex++] = (float)dt;
